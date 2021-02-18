@@ -15,15 +15,3 @@ require(porcupine)
 lms <- readRDS(file.path(data_dir, "20_LMS.Rdata"))
 lms[1:5, 1:5]
 
-##    reg  tar prior 0E244FE2-7C17-4642-A51F-2CCA796D9C70
-## 1 AIRE A1BG     0                                 0.76
-## 2 ALX1 A1BG     0                                 0.94
-## 3 ALX3 A1BG     0                                 1.09
-## 4 ALX4 A1BG     0                                 1.13
-## 5   AR A1BG     0                                -0.71
-##   75435ED8-93E8-45FB-8480-98D8EB2EF8CB
-## 1                                 0.10
-## 2                                 1.43
-## 3                                 2.78
-## 4                                 2.60
-## 5                                -1.42
