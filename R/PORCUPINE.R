@@ -1,31 +1,49 @@
-#' Compares PCA results for each pathway versus PCA results of a set set of random gene sets of the same size, calculates p-value and effect size for each pathway
+#' Determine statistical significance of PCA score of a pathway
 #'
-#' This function compares results of PCA analyses for each pathway versus set of permutated pathways of the same size, calculates p-value and effect size for each pathway
-#' @param res.ptws Output result table of pca_gmt function 
-#' @param res.random Output result table of pca_random function 
+#' Compares the observed PCA score for a pathway to a set of PCA scores of random gene sets of the same size as pathway. Calculates p-value and effect size.
+#' @param res_pca_pathway Result table of pca_pathway function for one pathway
+#' @param res_pca_random_subset Result table of pca_random function for one pathway 
+#' @return Table of statistics (pvalue and effect size) for each pathway
 #' @export
 
-PORCUPINE <- function(res.ptws, res.random) {
-  sizes.ptw <- unique(res.ptws$ptw_size)
-  
-  pval.dat.all <- NULL
-  for (k in 1:length(sizes.ptw)) {
-    ptw.size <- sizes.ptw[k]
-    ptw.block <- res.ptws[res.ptws$ptw_size %in% ptw.size,]
-    ptw.perm <- res.random[res.random$ptw_size %in% ptw.size,]
-    
-    pval.dat <- NULL
-    pval.dat.block  <- NULL
-    
-    for (l in 1:length(rownames(ptw.block))) {
-      pev1 <- ptw.block$pc1[l]
-      pc1.pval <- t.test(ptw.perm$pc1,mu=pev1, alternative="less")$p.value
-      pc1.es <- lsr::cohensD(ptw.perm$pc1, mu = pev1)
-      pval.dat <- data.table::data.table("pathway"=rownames(ptw.block)[l],"size"=ptw.block$sptw_ize[l], "pc1.pval"=pc1.pval, "pc1.es"=pc1.es)
-      pval.dat.block <- rbind(pval.dat.block, pval.dat)
-    }
-    
-    pval.dat.all <-  rbind( pval.dat.all, pval.dat.block)
-  }
-  pval.dat.all
+calculate_statistics <- function(res_pca_pathway, res_pca_rndm_set, test = t.test) {
+    pc1_rndm <- res_pca_rndm_set$pc1
+    pathway <- res_pca_pathway[["pathway"]]
+    path_size <- res_pca_pathway[["pathway_size"]]
+    pc1_pathway <- as.numeric(res_pca_pathway[["pc1"]])
+    pvalue <- test(pc1_rndm, mu = pc1_pathway, alternative = "less")$p.value
+    es <- lsr::cohensD(pc1_rndm, mu = pc1_pathway)
+    stat_res <- data.frame("pathway" = pathway,
+                "pathway_size" = path_size, "pval" = pvalue,
+                "es" = es)
+    return(stat_res)
+}
+
+#' Determine statistical significance of PCA scores of pathways
+#'
+#' This function compares results of PCA analyses for each pathway versus set of permutated gene sets. Calculates p-value and effect size for each pathway.
+#' @param res_pca_pathways Output result table of pca_pathway function
+#' @param res_pca_random Output result table of pca_random function
+#' @return Table of statistics (pvalue and effect size) for each pathway
+#' @export
+
+PORCUPINE <- function(res_pca_pathways, res_pca_rndm, test=t.test) {
+  pathways_size <- unique(res_pca_pathways$pathway_size)
+  res_all <- list()
+  for (k in 1:length(pathways_size)) {
+    path_size <- pathways_size[k]
+    print(path_size)
+    # select pca results for the pathways of the size path_size
+    res_pathway_set <- res_pca_pathways %>%
+                          dplyr::filter(pathway_size == path_size)
+    # select pca results for random sets of the size of a pathway
+    res_rndm_set <- res_pca_rndm %>%
+                         dplyr::filter(pathway_size == path_size)
+    # calculate pvalue and effect size for each pathway versus random gene sets 
+    res <- apply(res_pathway_set, 1, function(x) calculate_statistics(x, res_rndm_set, test=t.test))
+    names(res) <- NULL
+    res_all <- c(res, res_all)
+}
+    res_all <- do.call("rbind", res_all)
+    return(res_all)
 }

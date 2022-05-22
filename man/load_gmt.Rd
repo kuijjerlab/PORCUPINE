@@ -2,16 +2,16 @@
 % Please edit documentation in R/load_gmt.R
 \name{load_gmt}
 \alias{load_gmt}
-\title{Load a gmt file}
+\title{Load a .gmt file}
 \usage{
-load_gmt(gmt.file)
+load_gmt(gmt_file)
 }
 \arguments{
-\item{gmt.file}{Path to the input gmt file}
+\item{gmt_file}{Path to the input .gmt file. Gmt file is downloaded from http://www.gsea-msigdb.org/gsea/msigdb/collections.jsp}
 }
 \value{
-A list of the gmt.file
+A list of pathways from the .gmt file
 }
 \description{
-This function loads a gmt file.
+This function loads a .gmt file.
 }

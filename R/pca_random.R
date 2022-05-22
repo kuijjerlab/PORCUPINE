@@ -1,34 +1,41 @@
-#' Creates random gene sets and runs PCA analysis on a set of random gene sets
+#' Creates gene set for a universe of genes
+#'
+#' This function creates random gene sets 
+#' @param Size Number of genes in a gene set
+#' @param Universe Gene universe to sample random gene set from
+#' @param n_perm Number of permutations to create a random gene set (default: 1000)
+#' @return Random gene set
+#' @export
+
+create_gene_set <- function(universe, psize, n_perm = 1000) {
+    gene_set <- lapply(1:n_perm, function(x) sample(universe, size = psize, replace = FALSE))
+    return(gene_set)
+}
+
+#' Creates random gene sets and runs PCA analysis on network for a set of random gene sets
 #'
 #' This function creates random gene sets and runs PCA analysis on a set of random gene sets
-#' @param net A numeric matrix or a data frame, representing network
-#' @param res.ptws Output result table of pca_gmt function 
-#' @param pt.filt A list of filtered pathways 
-#' @param n.perm Number of permutations to create random gene set
-#' @param ncores A number of cores to use
+#' @param RegNet Table of network with samples in columns
+#' @param edges Table, containing information on "reg" and "tar" of RegNet
+#' @param results_pca_pathways Output result table of pca_pathway function 
+#' @param pathways_list A list of pathways
+#' @param n_perm Number of permutations to create a random gene set (default: 1000)
+#' @param ncores A number of cores to use (ncores: 1)
 #' @return Dataframe with pca results for random gene sets
 #' @export
 
-pca_random <- function(net, res.ptws, pt.filt, n.perm, ncores) {
-  sizes.ptw <- unique(res.ptws$ptw_size)
-  gene.set <- unique(unlist(pt.filt))
-  res.random.all <-NULL
-  res.random <- NULL
-  for (m in 1:length(sizes.ptw)) {
-    ptw.size <- sizes.ptw[m] 
-    cat("Pathways with size"," ", ptw.size, "\n")
-    random_gene_set <- lapply(1:n.perm, function(z) sample(gene.set, size=ptw.size, replace=FALSE))
-    res.random <- parallel::mclapply(random_gene_set, function(ptw) {
-      edges <- net[net$tar %in% ptw,] 
-      edges.t <- t(edges[,-c(1:3)])
-      res.pca.comp <- prcomp(edges.t, scale. =T, center=T) ### perfrom scaling
-      ntfs <- length(unique(net$reg))
-      ptw.size <- nrow(edges)/ntfs
-      pca.var <- c("ptw_size"=ptw.size, "pc1"=summary(res.pca.comp)$importance[2,1]*100,"n_edges"=nrow(edges))
-      pca.var
-    },  mc.cores = ncores)
-    res.random.all <- c(res.random, res.random.all)
-  }
-  res.random.all <- as.data.frame(do.call("rbind", res.random.all))
-  res.random.all
-}
+
+pca_random <- function(RegNet, edges, results_pca_pathways, pathways_list, n_perm = 1000, ncores = 1) {
+    pathways_size <- unique(results_pca_pathways$pathway_size)
+    universe <- unique(unlist(pathways_list))
+    res_pca_random <- list()
+    for (m in 1:length(pathways_size)) {
+    psize <- pathways_size[m]
+    cat("Pathways with size", " ", psize, "\n")
+    random_genes <- create_gene_set(universe, psize, n_perm = n_perm)
+    res_pca <- pca_pathway(random_genes, RegNet, edges, ncores)
+    res_pca_random[[m]] <- res_pca
+    }
+    res_pca_random_all <- as.data.frame(do.call("rbind", res_pca_random))
+    return(res_pca_random_all)
+    }

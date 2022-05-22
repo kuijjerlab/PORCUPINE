@@ -2,15 +2,18 @@
 % Please edit documentation in R/PORCUPINE.R
 \name{PORCUPINE}
 \alias{PORCUPINE}
-\title{Compares PCA results for each pathway versus PCA results of a set set of random gene sets of the same size, calculates p-value and effect size for each pathway}
+\title{Determine statistical significance of PCA scores of pathways}
 \usage{
-PORCUPINE(res.ptws, res.random)
+PORCUPINE(res_pca_pathways, res_pca_rndm, test = t.test)
 }
 \arguments{
-\item{res.ptws}{Output result table of pca_gmt function}
+\item{res_pca_pathways}{Output result table of pca_pathway function}
 
-\item{res.random}{Output result table of pca_random function}
+\item{res_pca_random}{Output result table of pca_random function}
+}
+\value{
+Table of statistics (pvalue and effect size) for each pathway
 }
 \description{
-This function compares results of PCA analyses for each pathway versus set of permutated pathways of the same size, calculates p-value and effect size for each pathway
+This function compares results of PCA analyses for each pathway versus set of permutated gene sets. Calculates p-value and effect size for each pathway.
 }

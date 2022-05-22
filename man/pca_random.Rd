@@ -2,20 +2,29 @@
 % Please edit documentation in R/pca_random.R
 \name{pca_random}
 \alias{pca_random}
-\title{Creates random gene sets and runs PCA analysis on a set of random gene sets}
+\title{Creates random gene sets and runs PCA analysis on network for a set of random gene sets}
 \usage{
-pca_random(net, res.ptws, pt.filt, n.perm, ncores)
+pca_random(
+  RegNet,
+  edges,
+  results_pca_pathways,
+  pathways_list,
+  n_perm = 1000,
+  ncores = 1
+)
 }
 \arguments{
-\item{net}{A numeric matrix or a data frame, representing network}
+\item{RegNet}{Table of network with samples in columns}
 
-\item{res.ptws}{Output result table of pca_gmt function}
+\item{edges}{Table, containing information on "reg" and "tar" of RegNet}
 
-\item{pt.filt}{A list of filtered pathways}
+\item{results_pca_pathways}{Output result table of pca_pathway function}
 
-\item{n.perm}{Number of permutations to create random gene set}
+\item{pathways_list}{A list of pathways}
 
-\item{ncores}{A number of cores to use}
+\item{n_perm}{Number of permutations to create a random gene set (default: 1000)}
+
+\item{ncores}{A number of cores to use (ncores: 1)}
 }
 \value{
 Dataframe with pca results for random gene sets
