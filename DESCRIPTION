@@ -1,13 +1,13 @@
-Package: porcupine
-Title: What the Package Does (One Line, Title Case)
+Package: PORCUPINE
+Title: Approach to study inter-tumour gene regulatory heterogeneity in a population of gene regulatory networks.
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Tatiana",
+           family = "Belova",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+           email = "tatiana.belova@ncmm.uio.no",
+           comment = c(ORCID = "0000-0001-5229-1717"))
+Description: Approach to study inter-tumour regulatory heterogeneity in a population of gene regulatory networks.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to
     pick a license
 Encoding: UTF-8
