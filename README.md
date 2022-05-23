@@ -10,6 +10,17 @@ Here we provide example how we analysed heterogeneity among single gene regulato
 library(remotes)
 install_github('kuijjerlab/PORCUPINE')
 library("PORCUPINE")
+
+For this analysis, we need to load the following packages:
+```{r}
+require("data.table")
+require("fgsea")
+require("dplyr")
+require("plyr")
+require("purrr")
+require("stats"
+require("parallel")
+require("lsr")
 ```
 First, we load the network data. Network file is quite big and it takes time to read it in. Our example contains 20 networks, represented by 11,151,077 edges.
 
