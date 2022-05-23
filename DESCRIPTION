@@ -18,3 +18,12 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+Imports:
+    data.table,
+    fgsea,
+    dplyr,
+    plyr,
+    purrr,
+    stats,
+    parallel,
+    lsr 

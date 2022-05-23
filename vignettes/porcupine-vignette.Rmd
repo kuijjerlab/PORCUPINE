@@ -27,14 +27,6 @@ data_dir <- ("/porcupine_data/")
 
 ```{r}
 require("porcupine")
-require("data.table")
-require("fgsea")
-require("dplyr")
-require("plyr")
-require("purrr")
-require("prcomp")
-require("parallel")
-require("lsr")
 
 net <- fread(file.path(data_dir, "20LMS_nets.txt"))
 net[1:5, 1:5]
