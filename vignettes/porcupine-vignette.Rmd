@@ -16,7 +16,7 @@ and a list of genes assigned to biological pathways in order to identify key pat
 of variables—for example a set of genes in a specific pathway—have coordinated variability in their regulation.
 Here we provide an example how we analysed heterogeneity among patient-specific gene regulatory networks in Leiomyosarcomas (LMS). Networks were obtained with PANDA 
 and LIONESS algorithms. Our example dataset contains data for 20 LMS patient-specific gene regulatory networks.
-To run PORCOPINE analysis one needs matrix with networks (samples in columns), edges information (table containing "reg" and "tar" information) and a .gmt pathway file. 
+To run PORCUPINE analysis one needs matrix with networks (samples in columns), edges information (table containing "reg" and "tar" information) and a .gmt pathway file. 
 
 First, we load the network data. Network file is quite big and it takes time to read it in. Our example contains 20 networks, represented by 11,151,077 edges.
 Next, we need to load in edges information, corresponding to our network data. Edges table should contain columns "tar" and "reg". In our case, edge table contains 623 Tfs and 17,899 target genes.
@@ -39,7 +39,7 @@ Then, we need to load in pathway file (.gmt file). Gmt files can be downloaded f
 pathways <- load_gmt(file.path(data_dir, "c2.cp.reactome.v7.1.symbols.gmt"))
 length(pathways)
 ```
-We need to filter pathways in order to include only pathways with genes that are present in our network file. Additionally,  we filter pathways based on their size, and all pathways with more than 150 genes are filtered out. This filtering leaves 1423 pathways.
+We need to filter pathways in order to include only pathways with genes that are present in our network file. Additionally,  we filter pathways based on their size, and all pathways with less than 10 and more than 150 genes are filtered out. This filtering leaves 1128 pathways.
 ```{r, include=TRUE}
 pathways <- filter_pathways(pathways, edges,  minSize = 10, maxSize = 200)
 length(pathways)
@@ -49,18 +49,19 @@ We select the top 10 pathways for the analysis (just to reduce computational tim
 ```{r, include=TRUE}
 pathways_to_use <- pathways[1:10]
 ```
-Next, we perform PCA analysis for the 10 selected pathawys and extact the information on the variance explained by the first principal component in each pathway
+Next, we perform PCA analysis for the 10 selected pathawys and extact the information on the variance explained by the first principal component in each pathway.
 
 ```{r, include=TRUE}
 pca_res_pathways <- pca_pathway(pathways_to_use, net, edges, ncores = 10)
 head(pca_res_pathways)
 ```
-Then we perform a PCA analysis based on random gene sets.
+Then we perform a PCA analysis based on random gene sets. In this case we create 500 random gene sets for each pathway and run PCA for each gene set.
+
 ```{r, include=TRUE}
 pca_res_random <- pca_random(net, edges, pca_res_pathways, pathways, n_perm = 500, ncores = 20)
 head(pca_res_random)
 ```
-The to identify significant pathways we run PORCUPINE, which compares the observed PCA score for a pathway to a set of PCA scores of random gene sets of the same size as pathway. Calculates p-value and effect size.
+Then to identify significant pathways we run PORCUPINE, which compares the observed PCA score for a pathway to a set of PCA scores of random gene sets of the same size as pathway. Calculates p-value and effect size.
 ```{r, include=TRUE}
 res_porcupine <- PORCUPINE(pca_res_pathways, pca_res_random)
 res_porcupine$p.adjust <- p.adjust(res_porcupine$pval, method = "fdr")
