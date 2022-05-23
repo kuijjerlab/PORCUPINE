@@ -26,7 +26,7 @@ data_dir <- ("/porcupine_data/")
 ```
 
 ```{r}
-require("porcupine")
+require("PORCUPINE")
 
 net <- fread(file.path(data_dir, "20LMS_nets.txt"))
 net[1:5, 1:5]
