@@ -18,7 +18,7 @@ require("fgsea")
 require("dplyr")
 require("plyr")
 require("purrr")
-require("stats"
+require("stats")
 require("parallel")
 require("lsr")
 ```
